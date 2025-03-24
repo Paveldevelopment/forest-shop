@@ -1,46 +1,60 @@
-# Getting Started with Create React App
+# Forest Shop
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Forest Shop is a frontend application for managing products in the shop (Lišákův obchod). It is built using React, TypeScript, Material-UI, Formik, and Axios. The application allows you to list, add, edit, and delete products. It communicates with a backend defined by an OpenAPI specification.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Product Listing:** View a list of products with details including name, price, stock quantity, and active status.
+- **Search & Filtering:** Search for products by name, price, or stock quantity, and filter by active/inactive status.
+- **Product Management:** Easily add, edit, and delete products.
+- **Responsive Design:** Built with Material-UI for a modern and responsive user interface.
+- **API Integration:** Communicates with a backend defined by an OpenAPI specification.
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Node.js (v14 or higher recommended)
+- npm
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Running the Backend via Docker
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To run Forest Shop, either use the following `docker run` command:
 
-### `npm run build`
+```bash
+docker run -p 3000:3000 sajdlavantro/exampleshop
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Or create a docker-compose.yml file in your project directory with the following content:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+services:
+  exampleshop:
+    image: sajdlavantro/exampleshop:latest
+    ports:
+      - "3000:3000"
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Then, in that same directory, run:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+docker compose up
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Once the backend is running, the OpenAPI specification will be available at http://localhost:3000/api.
 
-## Learn More
+Running the Application Locally
+Clone the repository:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+git clone https://github.com/Paveldevelopment/forest-shop
+cd exampleshop
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+npm install
+
+
+Start the application:
+
+npm start
+
+
+The application will run in development mode for example at http://localhost:3001
+```

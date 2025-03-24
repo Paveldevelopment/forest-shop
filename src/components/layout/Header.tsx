@@ -7,7 +7,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 const Header: React.FC = () => {
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ mb: 2 }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Lišákův obchod

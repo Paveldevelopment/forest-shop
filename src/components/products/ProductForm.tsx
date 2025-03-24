@@ -21,10 +21,10 @@ const validationSchema = Yup.object({
   name: Yup.string().required("Název je povinný"),
   price: Yup.number()
     .required("Cena je povinná")
-    .min(0, "Cena musí být kladná"),
+    .min(1, "Cena musí být kladná"),
   stockQuantity: Yup.number()
     .required("Množství na skladě je povinné")
-    .min(0, "Množství musí být kladné"),
+    .min(1, "Množství musí být kladné"),
 });
 
 const ProductForm: React.FC<ProductFormProps> = ({

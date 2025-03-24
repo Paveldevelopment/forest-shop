@@ -10,6 +10,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Paper,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import SearchBar from "../../components/common/SearchBar";
@@ -20,44 +21,45 @@ import { Product } from "../../types/product";
 import useProducts from "../../hooks/useProducts";
 
 const ProductListPage: React.FC = () => {
-  // Stav pro filtr aktivních/neaktivních produktů:
-  // "true" = Aktivní → předáme undefined (endpoint vrací pouze aktivní produkty)
-  // "false" = Neaktivní → předáme "false" (endpoint obdrží parametr ?includeInactive=false a klientská filtrace ponechá jen inactive)
+  // Stav pro filtr
   const [activeFilter, setActiveFilter] = useState<string>("true");
   const includeInactiveParam: string | undefined =
     activeFilter === "true" ? undefined : "false";
 
-  // Hook načítá produkty na základě předaného parametru
+  // Hook načítá produkty (aktivní/neaktivní)
   const { products, loading, error, removeProduct, editProduct } =
     useProducts(includeInactiveParam);
 
+  // Vyhledávání
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
-  // Stavy pro dialogy
+  // Dialogy (mazání, editace)
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
 
-  // Stav pro Snackbar notifikaci
+  // Snackbar notifikace
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
     "success"
   );
 
+  // Získání zprávy z location (např. po přidání produktu)
   const location = useLocation();
-
   useEffect(() => {
     if (location.state && (location.state as any).message) {
       setSnackbarMessage((location.state as any).message);
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
+      // Vyčistíme state v historii, aby se zpráva neukazovala opakovaně
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
+  // Filtrovací funkce
   const filterProducts = (
     query: string,
     prods: Product[],
@@ -70,35 +72,33 @@ const ProductListPage: React.FC = () => {
         p.price.toString().includes(query) ||
         p.stockQuantity.toString().includes(query)
     );
-    // Pokud je vybráno "Neaktivní", ponecháme jen produkty, kde isActive === false
+    // Pokud je vybráno "Neaktivní", ponecháme jen isActive === false
     if (activeFilter === "false") {
       filtered = filtered.filter((p) => p.isActive === false);
     }
     return filtered;
   };
 
+  // Změna vyhledávacího dotazu
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setFilteredProducts(filterProducts(value, products, activeFilter));
   };
 
+  // Změna filtru
   const handleActiveFilterChange = (value: string) => {
     setActiveFilter(value);
   };
 
+  // Při změně produktů, filtru nebo query přefiltrujeme
   useEffect(() => {
     setFilteredProducts(filterProducts(searchQuery, products, activeFilter));
   }, [products, searchQuery, activeFilter]);
 
-  // Definice funkcí pro editaci a mazání
+  // Editace produktu
   const handleEditClick = (product: Product) => {
     setProductToEdit(product);
     setEditDialogOpen(true);
-  };
-
-  const handleDelete = (product: Product) => {
-    setProductToDelete(product);
-    setDeleteDialogOpen(true);
   };
 
   const handleEditSubmit = async (
@@ -119,6 +119,12 @@ const ProductListPage: React.FC = () => {
     setProductToEdit(null);
   };
 
+  // Mazání produktu
+  const handleDelete = (product: Product) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
   const confirmDelete = async () => {
     if (productToDelete) {
       await removeProduct(productToDelete.id);
@@ -136,33 +142,63 @@ const ProductListPage: React.FC = () => {
   };
 
   return (
-    <Container sx={{ marginTop: 4 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      {/* Hlavní nadpis */}
+      <Typography variant="h3" align="center" gutterBottom>
+        Lišákův obchod
+      </Typography>
+      {/* Podnadpis */}
+      <Typography
+        variant="h5"
+        align="center"
+        color="text.secondary"
+        gutterBottom
+      >
         Evidenční seznam produktů
       </Typography>
-      {loading && <CircularProgress />}
+
+      {/* Loader */}
+      {loading && (
+        <Box display="flex" justifyContent="center" my={4}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {/* Chyba z API */}
       {error && <Alert severity="error">{error}</Alert>}
-      <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
-        <SearchBar value={searchQuery} onChange={handleSearchChange} />
-        <FormControl sx={{ minWidth: 120, marginLeft: 2 }}>
-          <InputLabel id="active-filter-label">Aktivní</InputLabel>
-          <Select
-            labelId="active-filter-label"
-            id="active-filter"
-            value={activeFilter}
-            label="Aktivní"
-            onChange={(e) => handleActiveFilterChange(e.target.value as string)}
-          >
-            <MenuItem value="true">Aktivní</MenuItem>
-            <MenuItem value="false">Neaktivní</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <ProductTable
-        products={filteredProducts}
-        onEdit={handleEditClick}
-        onDelete={handleDelete}
-      />
+
+      {/* Vyhledávání + Filtr */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <SearchBar value={searchQuery} onChange={handleSearchChange} />
+          <FormControl sx={{ minWidth: 120, ml: 2 }}>
+            <InputLabel id="active-filter-label">Aktivní</InputLabel>
+            <Select
+              labelId="active-filter-label"
+              id="active-filter"
+              value={activeFilter}
+              label="Aktivní"
+              onChange={(e) =>
+                handleActiveFilterChange(e.target.value as string)
+              }
+            >
+              <MenuItem value="true">Aktivní</MenuItem>
+              <MenuItem value="false">Neaktivní</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Paper>
+
+      {/* Tabulka s produkty */}
+      <Paper sx={{ p: 2 }}>
+        <ProductTable
+          products={filteredProducts}
+          onEdit={handleEditClick}
+          onDelete={handleDelete}
+        />
+      </Paper>
+
+      {/* Dialogy pro mazání / editaci */}
       <DeleteConfirmationDialog
         open={deleteDialogOpen}
         onConfirm={confirmDelete}
@@ -177,6 +213,8 @@ const ProductListPage: React.FC = () => {
         }}
         onSubmit={handleEditSubmit}
       />
+
+      {/* Snackbar notifikace */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={snackbarOpen}
