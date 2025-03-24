@@ -20,16 +20,23 @@ import { Product } from "../../types/product";
 import useProducts from "../../hooks/useProducts";
 
 const ProductListPage: React.FC = () => {
-  const { products, loading, error, removeProduct, editProduct } =
-    useProducts();
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  // Uložíme hodnotu filtru pro isActive jako string ("true" nebo "false") – defaultně "true"
+  // Stav pro filtr aktivních/neaktivních produktů:
+  // "true" = Aktivní → předáme undefined (endpoint vrací pouze aktivní produkty)
+  // "false" = Neaktivní → předáme "false" (endpoint obdrží parametr ?includeInactive=false a klientská filtrace ponechá jen inactive)
   const [activeFilter, setActiveFilter] = useState<string>("true");
+  const includeInactiveParam: string | undefined =
+    activeFilter === "true" ? undefined : "false";
+
+  // Hook načítá produkty na základě předaného parametru
+  const { products, loading, error, removeProduct, editProduct } =
+    useProducts(includeInactiveParam);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+
+  // Stavy pro dialogy
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
-
-  // Stav pro editaci produktu
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
 
@@ -42,77 +49,74 @@ const ProductListPage: React.FC = () => {
 
   const location = useLocation();
 
-  // Pokud byla předána hláška přes state při navigaci (např. po přidání produktu), zobrazíme ji
   useEffect(() => {
     if (location.state && (location.state as any).message) {
       setSnackbarMessage((location.state as any).message);
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-      // Vyčistíme state, aby se hláška nezobrazovala opakovaně
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
-  // Pomocná funkce pro filtrování produktů podle vyhledávacího dotazu a filtru isActive
-  const filterProducts = (query: string, active: string, prods: Product[]) => {
+  const filterProducts = (
+    query: string,
+    prods: Product[],
+    activeFilter: string
+  ) => {
     const qLower = query.toLowerCase();
-    return prods.filter(
+    let filtered = prods.filter(
       (p) =>
-        p.isActive === (active === "true") &&
-        (p.name.toLowerCase().includes(qLower) ||
-          p.price.toString().includes(query) ||
-          p.stockQuantity.toString().includes(query))
+        p.name.toLowerCase().includes(qLower) ||
+        p.price.toString().includes(query) ||
+        p.stockQuantity.toString().includes(query)
     );
+    // Pokud je vybráno "Neaktivní", ponecháme jen produkty, kde isActive === false
+    if (activeFilter === "false") {
+      filtered = filtered.filter((p) => p.isActive === false);
+    }
+    return filtered;
   };
 
-  // Obsluha změny vyhledávacího dotazu
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setFilteredProducts(filterProducts(value, activeFilter, products));
+    setFilteredProducts(filterProducts(value, products, activeFilter));
   };
 
-  // Obsluha změny filtru podle isActive
   const handleActiveFilterChange = (value: string) => {
     setActiveFilter(value);
-    setFilteredProducts(filterProducts(searchQuery, value, products));
   };
 
-  // Aktualizace filtrovaných produktů při změně původního seznamu, vyhledávacího dotazu nebo filtru isActive
   useEffect(() => {
-    setFilteredProducts(filterProducts(searchQuery, activeFilter, products));
+    setFilteredProducts(filterProducts(searchQuery, products, activeFilter));
   }, [products, searchQuery, activeFilter]);
 
-  // Obsluha kliknutí na ikonu editace
+  // Definice funkcí pro editaci a mazání
   const handleEditClick = (product: Product) => {
     setProductToEdit(product);
     setEditDialogOpen(true);
   };
 
-  // Callback po odeslání formuláře v dialogu pro editaci
+  const handleDelete = (product: Product) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
   const handleEditSubmit = async (
     id: number,
     values: { name: string; price: number; stockQuantity: number }
   ) => {
     try {
       await editProduct(id, values);
-      console.log("Produkt byl úspěšně aktualizován.");
       setSnackbarMessage("Produkt byl úspěšně aktualizován.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } catch (error) {
-      console.error("Chyba při aktualizaci produktu:", error);
       setSnackbarMessage("Chyba při aktualizaci produktu.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
     setEditDialogOpen(false);
     setProductToEdit(null);
-  };
-
-  // Obsluha smazání – otevření dialogu
-  const handleDelete = (product: Product) => {
-    setProductToDelete(product);
-    setDeleteDialogOpen(true);
   };
 
   const confirmDelete = async () => {

@@ -12,6 +12,9 @@ export interface ProductFormValues {
 interface ProductFormProps {
   initialValues: ProductFormValues;
   onSubmit: (values: ProductFormValues) => void;
+  innerRef?: React.MutableRefObject<HTMLFormElement | null>;
+  // Přidána volitelná vlastnost pro zobrazení tlačítka
+  showSubmitButton?: boolean;
 }
 
 const validationSchema = Yup.object({
@@ -27,6 +30,8 @@ const validationSchema = Yup.object({
 const ProductForm: React.FC<ProductFormProps> = ({
   initialValues,
   onSubmit,
+  innerRef,
+  showSubmitButton = true,
 }) => {
   return (
     <Formik
@@ -35,9 +40,11 @@ const ProductForm: React.FC<ProductFormProps> = ({
       onSubmit={onSubmit}
     >
       {({ values, errors, touched, handleChange, handleBlur }) => (
-        <Form>
+        <Form ref={innerRef}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
+              fullWidth
+              margin="normal"
               id="name"
               name="name"
               label="Název produktu"
@@ -48,6 +55,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
               helperText={touched.name && errors.name}
             />
             <TextField
+              fullWidth
+              margin="normal"
               id="price"
               name="price"
               label="Cena"
@@ -59,6 +68,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
               helperText={touched.price && errors.price}
             />
             <TextField
+              fullWidth
+              margin="normal"
               id="stockQuantity"
               name="stockQuantity"
               label="Množství na skladě"
@@ -69,9 +80,11 @@ const ProductForm: React.FC<ProductFormProps> = ({
               error={touched.stockQuantity && Boolean(errors.stockQuantity)}
               helperText={touched.stockQuantity && errors.stockQuantity}
             />
-            <Button variant="contained" type="submit">
-              Uložit
-            </Button>
+            {showSubmitButton && (
+              <Button variant="contained" type="submit">
+                Uložit
+              </Button>
+            )}
           </Box>
         </Form>
       )}

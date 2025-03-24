@@ -22,7 +22,12 @@ const EditProductDialog: React.FC<EditProductDialogProps> = ({
   onClose,
   onSubmit,
 }) => {
-  if (!product) return null;
+  // Hook voláme vždy, před jakýmkoli podmíněným returnem
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  if (!product) {
+    return null;
+  }
 
   const initialValues: ProductFormValues = {
     name: product.name,
@@ -30,18 +35,36 @@ const EditProductDialog: React.FC<EditProductDialogProps> = ({
     stockQuantity: product.stockQuantity,
   };
 
-  const handleSubmit = (values: ProductFormValues) => {
+  const handleFormSubmit = (values: ProductFormValues) => {
     onSubmit(product.id, values);
+  };
+
+  // Voláme submit formuláře ručně z tlačítek v dialogu
+  const handleSaveClick = () => {
+    if (formRef.current) {
+      formRef.current.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      );
+    }
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Upravit produkt</DialogTitle>
       <DialogContent>
-        <ProductForm initialValues={initialValues} onSubmit={handleSubmit} />
+        <ProductForm
+          innerRef={formRef}
+          initialValues={initialValues}
+          onSubmit={handleFormSubmit}
+          // V dialogu tlačítko uvnitř formuláře nechceme
+          showSubmitButton={false}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Zrušit</Button>
+        <Button variant="contained" onClick={handleSaveClick}>
+          Uložit
+        </Button>
       </DialogActions>
     </Dialog>
   );

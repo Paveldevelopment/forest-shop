@@ -13,11 +13,9 @@ const CreateProductPage: React.FC = () => {
   const handleSubmit = async (values: ProductFormValues) => {
     try {
       await addProduct(values);
-      // Předáme hlášku do ProductListPage pomocí navigate state
       navigate("/", { state: { message: "Produkt byl úspěšně přidán." } });
     } catch (error) {
       console.error("Chyba při přidávání produktu:", error);
-      // Můžete přidat vlastní obsluhu chyb (např. zobrazení notifikace)
     }
   };
 
@@ -26,6 +24,7 @@ const CreateProductPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Přidat nový produkt
       </Typography>
+      {/* Zde se nepředává innerRef ani showSubmitButton, takže se zobrazí tlačítko Uložit */}
       <ProductForm
         initialValues={{ name: "", price: 0, stockQuantity: 0 }}
         onSubmit={handleSubmit}
