@@ -1,60 +1,92 @@
 # Forest Shop
 
-Forest Shop is a frontend application for managing products in the shop (Lišákův obchod). It is built using React, TypeScript, Material-UI, Formik, and Axios. The application allows you to list, add, edit, and delete products. It communicates with a backend defined by an OpenAPI specification.
+Forest Shop is a clean, modern frontend application for managing products in Lišákův obchod ("Fox’s Shop"). Built with React, TypeScript, Material‑UI, Formik, and Axios, it provides an intuitive interface for listing, creating, updating, and deleting products via an OpenAPI‑defined backend.
 
-## Features
+---
 
-- **Product Listing:** View a list of products with details including name, price, stock quantity, and active status.
-- **Search & Filtering:** Search for products by name, price, or stock quantity, and filter by active/inactive status.
-- **Product Management:** Easily add, edit, and delete products.
-- **Responsive Design:** Built with Material-UI for a modern and responsive user interface.
-- **API Integration:** Communicates with a backend defined by an OpenAPI specification.
+## 📋 Table of Contents
 
-## Prerequisites
+1. [Features](#-features)
+2. [Tech Stack](#-tech-stack)
+3. [Prerequisites](#-prerequisites)
+4. [Getting Started](#-getting-started)
+   - [Run with Docker](#run-with-docker)
+   - [Run Locally](#run-locally)
+5. [API Specification](#-api-specification)
+6. [License](#-license)
 
-- Node.js (v14 or higher recommended)
-- npm
+---
 
-## Getting Started
+## 🚀 Features
 
-### Running the Backend via Docker
+- **Product Listing:** View all products with details (name, price, stock, status).
+- **Search & Filter:** Filter by name, price range, stock quantity, and active/inactive status.
+- **CRUD Operations:** Add, edit, or delete products with instant validation.
+- **Responsive Design:** Fully responsive UI powered by Material‑UI.
+- **OpenAPI Integration:** Automatic type safety and API documentation.
 
-To run Forest Shop, either use the following `docker run` command:
+---
+
+## 🛠 Tech Stack
+
+| Layer             | Technology                                        |
+| ----------------- | ------------------------------------------------- |
+| Frontend          | React, TypeScript, Material‑UI, Formik, Axios     |
+| Backend (Example) | Docker image `sajdlavantro/exampleshop` (OpenAPI) |
+
+---
+
+## ✅ Prerequisites
+
+- Node.js v14+
+- npm v6+ or Yarn v1+
+- Docker (optional, for running backend)
+
+---
+
+## ⚡ Getting Started
+
+### Run with Docker
+
+1️⃣ Run backend with Docker:
 
 ```bash
-docker run -p 3000:3000 sajdlavantro/exampleshop
-
-
-Or create a docker-compose.yml file in your project directory with the following content:
-
-services:
-  exampleshop:
-    image: sajdlavantro/exampleshop:latest
-    ports:
-      - "3000:3000"
-
-
-Then, in that same directory, run:
-
-docker compose up
-
-
-Once the backend is running, the OpenAPI specification will be available at http://localhost:3000/api.
-
-Running the Application Locally
-Clone the repository:
-
-git clone https://github.com/Paveldevelopment/forest-shop
-cd exampleshop
-
-
-npm install
-
-
-Start the application:
-
-npm start
-
-
-The application will run in development mode for example at http://localhost:3001
+docker run -d --name exampleshop -p 3000:3000 sajdlavantro/exampleshop
 ```
+
+> The OpenAPI spec will be available at [http://localhost:3000/api](http://localhost:3000/api)
+
+### Run Locally
+
+1️⃣ Clone this repository:
+
+```bash
+git clone https://github.com/Paveldevelopment/forest-shop.git
+cd forest-shop
+```
+
+2️⃣ Install dependencies:
+
+```bash
+npm install
+```
+
+3️⃣ Start the development server:
+
+```bash
+npm start
+```
+
+> The app will open at [http://localhost:3001](http://localhost:3001) by default.
+
+---
+
+## 📄 API Specification
+
+Browse the backend API documentation here: [http://localhost:3000/api](http://localhost:3000/api)
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
