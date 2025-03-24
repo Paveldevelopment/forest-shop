@@ -13,7 +13,6 @@ interface ProductFormProps {
   initialValues: ProductFormValues;
   onSubmit: (values: ProductFormValues) => void;
   innerRef?: React.MutableRefObject<HTMLFormElement | null>;
-  // Přidána volitelná vlastnost pro zobrazení tlačítka
   showSubmitButton?: boolean;
 }
 

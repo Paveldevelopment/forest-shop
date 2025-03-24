@@ -1,4 +1,3 @@
-// src/services/productService.ts
 import api from "./api";
 import { Product } from "../types/product";
 
@@ -6,7 +5,6 @@ export const fetchProducts = async (
   includeInactive?: string
 ): Promise<Product[]> => {
   let url = "/products";
-  // Pokud includeInactive je definováno a není prázdné, přidáme query parametr
   if (includeInactive && includeInactive !== "") {
     url += `?includeInactive=${includeInactive}`;
   }

@@ -22,7 +22,6 @@ const EditProductDialog: React.FC<EditProductDialogProps> = ({
   onClose,
   onSubmit,
 }) => {
-  // Hook voláme vždy, před jakýmkoli podmíněným returnem
   const formRef = React.useRef<HTMLFormElement>(null);
 
   if (!product) {
@@ -39,7 +38,6 @@ const EditProductDialog: React.FC<EditProductDialogProps> = ({
     onSubmit(product.id, values);
   };
 
-  // Voláme submit formuláře ručně z tlačítek v dialogu
   const handleSaveClick = () => {
     if (formRef.current) {
       formRef.current.dispatchEvent(
@@ -56,7 +54,6 @@ const EditProductDialog: React.FC<EditProductDialogProps> = ({
           innerRef={formRef}
           initialValues={initialValues}
           onSubmit={handleFormSubmit}
-          // V dialogu tlačítko uvnitř formuláře nechceme
           showSubmitButton={false}
         />
       </DialogContent>
