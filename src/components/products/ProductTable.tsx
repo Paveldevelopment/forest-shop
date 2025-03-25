@@ -11,6 +11,7 @@ import {
 import { Product } from "../../types/product";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { formatCurrency } from "../../utils/formatters";
 
 interface ProductTableProps {
   products: Product[];
@@ -38,7 +39,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
         {products.map((product) => (
           <TableRow key={product.id}>
             <TableCell>{product.name}</TableCell>
-            <TableCell>{product.price}</TableCell>
+            <TableCell>{formatCurrency(product.price)}</TableCell>
             <TableCell>{product.stockQuantity}</TableCell>
             <TableCell>{product.isActive ? "Aktivní" : "Neaktivní"}</TableCell>
             <TableCell align="right">
